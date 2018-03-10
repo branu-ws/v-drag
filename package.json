@@ -2,17 +2,22 @@
   "name": "@branu-jp/v-drag",
   "version": "0.0.1",
   "description": "A Vue.js draggable directive",
-  "main": "index.js",
-  "dependencies": {},
+  "main": "src/index.js",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-jest": "^22.4.1",
     "babel-preset-env": "^1.6.1",
+    "jest": "^22.4.2",
     "rimraf": "^2.6.2"
   },
-  "main": "src/index.js",
+  "peerDependencies": {
+    "vue": "^2.5.14"
+  },
+  "peerDependencies": {},
   "scripts": {
     "start": "babel-node src",
-    "build": "rimraf lib && babel src -d lib"
+    "build": "rimraf lib && babel src -d lib",
+    "test": "jest"
   },
   "repository": {
     "type": "git",

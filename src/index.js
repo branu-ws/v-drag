@@ -1,44 +1,42 @@
 import Vue from 'vue'
 
-let draggerOffsetX = 0
-let draggerOffsetY = 0
-let initialX = 0
-let initialY = 0
-let down = false
+const _data = {
+  down: false,
+  initialX: 0,
+  initialY: 0,
+  draggerOffsetLeft: 0,
+  draggerOffsetTop: 0
+}
 
-function setInitialOffset (el) {
-  draggerOffsetX = el.offsetLeft
-  draggerOffsetY = el.offsetTop
+export function mousedown (e, el, _data) {
+  _data.down = true
+  _data.initialX = e.clientX
+  _data.initialY = e.clientY
+}
+
+export function mouseup (e, el, _data) {
+  _data.down = false
+  setDraggerOffset(el, _data)
+}
+
+export function mousemove (e, el, _data) {
+  if (_data.down) {
+    el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
+    el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
+  }    
+}
+
+export function setDraggerOffset (el, _data) {
+  _data.draggerOffsetLeft = el.offsetLeft
+  _data.draggerOffsetTop = el.offsetTop
 }
 
 export default Vue.directive('drag', {
-  bind: function (el) {
-  },
-
   inserted: function (el, binding, vnode) {
-    draggerOffsetX = el.offsetLeft
-    draggerOffsetY = el.offsetTop
-    el.addEventListener('mouseup', () => {
-      down = false
-      setInitialOffset(el)
-    })
-
-    el.addEventListener('mousedown', (e) => {
-      down = true
-      initialX = e.clientX
-      initialY = e.clientY
-    })
-
-    el.addEventListener('mouseout', () => {
-      down = false
-      setInitialOffset(el)
-    })
-
-    el.addEventListener('mousemove', (e) => {
-      if (down) {
-        el.style.left = draggerOffsetX + (e.clientX - initialX) + 'px'
-        el.style.top = draggerOffsetY + (e.clientY - initialY) + 'px'
-      }    
-    })
+    el.addEventListener('mouseup', (e) => mouseup(e, el, _data))
+    el.addEventListener('mousedown', (e) => mousedown(e, el, _data))
+    el.addEventListener('mousemove', (e) => mousemove(e, el, _data))
+    setDraggerOffset(el, _data)
   }
 })
+
