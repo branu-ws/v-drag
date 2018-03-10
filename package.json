@@ -16,7 +16,7 @@
   "peerDependencies": {},
   "scripts": {
     "start": "babel-node src",
-    "build": "rimraf lib && babel src -d lib",
+    "build": "rimraf lib && babel src -d lib --ignore src/__tests__",
     "test": "jest"
   },
   "repository": {
