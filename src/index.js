@@ -5,17 +5,40 @@ const _data = {
   initialX: 0,
   initialY: 0,
   draggerOffsetLeft: 0,
-  draggerOffsetTop: 0
+  draggerOffsetTop: 0,
+  overlay: null
+}
+
+export function createOverlay (e, el, _data) {
+  const overlay = document.createElement('div')
+  overlay.setAttribute('style', `
+    width: 100vw; 
+    height: 100vh; 
+  `)
+  overlay.addEventListener('mouseup', (e) => mouseup(e, el, _data))
+  overlay.addEventListener('mousedown', (e) => mousedown(e, el, _data))
+  overlay.addEventListener('mousemove', (e) => mousemove(e, el, _data))
+  el.parentElement.append(overlay)
+
+  return overlay
 }
 
 export function mousedown (e, el, _data) {
   _data.down = true
   _data.initialX = e.clientX
   _data.initialY = e.clientY
+  const overlay = createOverlay(e, el, _data)
+  _data.overlay = overlay
 }
 
 export function mouseup (e, el, _data) {
   _data.down = false
+
+  _data.overlay.removeEventListener('mouseup', mouseup)
+  _data.overlay.removeEventListener('mousedown', mousedown)
+  _data.overlay.removeEventListener('mousemove', mousemove)
+  _data.overlay.remove()
+
   setDraggerOffset(el, _data)
 }
 

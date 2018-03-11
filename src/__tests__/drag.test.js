@@ -2,10 +2,13 @@ import {
   mouseup, 
   mousedown, 
   mousemove,
-  setDraggerOffset
+  setDraggerOffset,
+  createOverlay
 } from '../index.js'
 
 describe('drag', () => {
+  const mockEl = document.createElement('div')
+
   describe('setInitialOffset', () => {
     it('sets the initial offset of the element', () => {
       const data = {
@@ -69,12 +72,12 @@ describe('drag', () => {
 
   describe('mouseup', () => {
     it('sets down = false', () => {
-      const el = {}
       const data = {
-        down: true
+        down: true,
+        overlay: mockEl
       }
 
-      mouseup(undefined, el, data) 
+      mouseup(undefined, mockEl, data) 
       expect(data.down).toBe(false)
     })
   })
@@ -86,15 +89,30 @@ describe('drag', () => {
         initialY: 0,
         down: false
       }
+      const mockOverlay = { parentElement: { append: () => {} } }
       const evt = {
         clientX: 1,
         clientY: 1
       }
 
-      mousedown(evt, undefined, data) 
+      mousedown(evt, mockOverlay, data) 
       expect(data.down).toBe(true)
       expect(data.initialX).toBe(1)
       expect(data.initialY).toBe(1)
+    })
+  })
+
+  describe('createOverlay', () => {
+    it('returns a html div element with height/width of entire screen', () => {
+      const el = document.createElement('div')
+      const parentEl = document.createElement('div')
+      parentEl.appendChild(el)
+
+      const result = createOverlay(undefined, el, {}) 
+      
+      expect(result.getAttribute('style').includes('width: 100vw')).toBe(true)
+      expect(result.getAttribute('style').includes('height: 100vh')).toBe(true)
+      expect(result instanceof HTMLDivElement).toBe(true)
     })
   })
 })
