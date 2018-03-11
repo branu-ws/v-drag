@@ -1,6 +1,6 @@
 `v-drag` - a supler simple, Vue.js draggable component.
 
-![image](https://user-images.githubusercontent.com/19196536/37251038-1db269ca-254c-11e8-8731-50916f92d64f.png)
+![](http://g.recordit.co/bMTaLKJUvp.gif)
 
 Demo: https://branu-ws.github.io/v-drag/
 
