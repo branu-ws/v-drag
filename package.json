@@ -19,6 +19,7 @@
     "build": "rimraf lib && babel src -d lib --ignore src/__tests__",
     "test": "jest"
   },
+  "homepage": "https://github.com/bran-ws/v-drag#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/branu-ws/v-drag"
