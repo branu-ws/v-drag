@@ -1,6 +1,6 @@
 {
   "name": "@branu-jp/v-drag",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Vue.js draggable directive",
   "main": "src/index.js",
   "devDependencies": {
@@ -9,9 +9,6 @@
     "babel-preset-env": "^1.6.1",
     "jest": "^22.4.2",
     "rimraf": "^2.6.2"
-  },
-  "peerDependencies": {
-    "vue": "^2.5.14"
   },
   "peerDependencies": {},
   "scripts": {
