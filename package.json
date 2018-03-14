@@ -1,8 +1,8 @@
 {
   "name": "@branu-jp/v-drag",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Vue.js draggable directive",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-jest": "^22.4.1",
