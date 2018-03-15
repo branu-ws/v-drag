@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import drag from '../../lib'
+import drag from '../../src'
 export default {
   name: 'app',
 

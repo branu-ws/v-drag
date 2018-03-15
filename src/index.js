@@ -14,16 +14,23 @@ export function createOverlay (e, el, _data) {
   overlay.setAttribute('style', `
     width: 100vw; 
     height: 100vh; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
   `)
   overlay.addEventListener('mouseup', (e) => mouseup(e, el, _data))
   overlay.addEventListener('mousedown', (e) => mousedown(e, el, _data))
   overlay.addEventListener('mousemove', (e) => mousemove(e, el, _data))
-  el.parentElement.append(overlay)
+  document.body.appendChild(overlay)
 
   return overlay
 }
 
 export function mousedown (e, el, _data) {
+  if (_data.overlay) {
+    _data.overlay.remove()
+  }
   _data.down = true
   _data.initialX = e.clientX
   _data.initialY = e.clientY
