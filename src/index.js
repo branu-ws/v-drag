@@ -6,7 +6,9 @@ const _data = {
   initialY: 0,
   draggerOffsetLeft: 0,
   draggerOffsetTop: 0,
-  overlay: null
+  overlay: null,
+  draggableEl: null,
+  initialZIndex: undefined
 }
 
 export function createOverlay (e, el, _data) {
@@ -27,6 +29,10 @@ export function createOverlay (e, el, _data) {
   return overlay
 }
 
+export function adjustElementZIndex(el, index) {
+  el.style.zIndex = index
+}
+
 export function mousedown (e, el, _data) {
   if (_data.overlay) {
     _data.overlay.remove()
@@ -36,6 +42,7 @@ export function mousedown (e, el, _data) {
   _data.initialY = e.clientY
   const overlay = createOverlay(e, el, _data)
   _data.overlay = overlay
+  adjustElementZIndex(el, 10001)
 }
 
 export function mouseup (e, el, _data) {
@@ -45,6 +52,7 @@ export function mouseup (e, el, _data) {
   _data.overlay.removeEventListener('mousedown', mousedown)
   _data.overlay.removeEventListener('mousemove', mousemove)
   _data.overlay.remove()
+  adjustElementZIndex(el, _data.initialZIndex)
 
   setDraggerOffset(el, _data)
 }
@@ -67,6 +75,7 @@ export default Vue.directive('drag', {
     el.addEventListener('mousedown', (e) => mousedown(e, el, _data))
     el.addEventListener('mousemove', (e) => mousemove(e, el, _data))
     setDraggerOffset(el, _data)
+    _data.initialZIndex = el.style.zIndex
   }
 })
 

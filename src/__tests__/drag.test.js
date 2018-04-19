@@ -2,6 +2,7 @@ import {
   mouseup, 
   mousedown, 
   mousemove,
+  adjustElementZIndex,
   setDraggerOffset,
   createOverlay
 } from '../index.js'
@@ -23,6 +24,20 @@ describe('drag', () => {
       setDraggerOffset(el, data) 
       expect(data.draggerOffsetLeft).toBe(1)
       expect(data.draggerOffsetTop).toBe(1)
+    })
+  })
+
+  describe('adjustElementZIndex', () => {
+    it('increases the initial element zIndex to 10001', () => {
+      const el = {
+        style: {
+          zIndex: 0
+        }
+      }
+      
+      adjustElementZIndex(el, 10001)
+
+      expect(el.style.zIndex).toBe(10001)
     })
   })
 
@@ -74,7 +89,8 @@ describe('drag', () => {
     it('sets down = false', () => {
       const data = {
         down: true,
-        overlay: mockEl
+        overlay: mockEl,
+        initialZIndex: 0
       }
 
       mouseup(undefined, mockEl, data) 
@@ -89,13 +105,16 @@ describe('drag', () => {
         initialY: 0,
         down: false
       }
-      const mockOverlay = { parentElement: { append: () => {} } }
+      const el = { 
+        parentElement: { append: () => {} },
+        style: { zIndex: 0 }
+      }
       const evt = {
         clientX: 1,
         clientY: 1
       }
 
-      mousedown(evt, mockOverlay, data) 
+      mousedown(evt, el, data) 
       expect(data.down).toBe(true)
       expect(data.initialX).toBe(1)
       expect(data.initialY).toBe(1)
