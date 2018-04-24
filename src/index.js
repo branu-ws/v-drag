@@ -50,7 +50,7 @@ export function mousedown (e, el, _data) {
   // eg: `v-drag:drag-header` means only the element with 
   // id="drag-header" should be draggable.
   // If the user clicked another area, do nothing.
-  if (_data.draggableElementId && !checkIfIdInPath(e.path, _data.draggableElementId)) {
+  if (_data.draggableElementId && !checkIfIdInPath(_data.draggableElementId, e.path)) {
     return
   }
 
