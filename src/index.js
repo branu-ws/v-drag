@@ -30,6 +30,16 @@ export function createOverlay (e, el, _data) {
   return overlay
 }
 
+function checkIfIdInPath(id, path) {
+  for (let i = 0; i < path.length; i++) {
+    if (path[i].id === id) {
+      return true
+    }
+  }
+  return false
+}
+
+
 export function adjustElementZIndex(el, index) {
   el.style.zIndex = index
 }
@@ -40,7 +50,7 @@ export function mousedown (e, el, _data) {
   // eg: `v-drag:drag-header` means only the element with 
   // id="drag-header" should be draggable.
   // If the user clicked another area, do nothing.
-  if (_data.draggableElementId && e.target.id !== _data.draggableElementId) {
+  if (_data.draggableElementId && !checkIfIdInPath(e.path, _data.draggableElementId)) {
     return
   }
 
@@ -57,6 +67,9 @@ export function mousedown (e, el, _data) {
 
 export function mouseup (e, el, _data) {
   _data.down = false
+  if (!_data.overlay) {
+    return
+  }
 
   _data.overlay.removeEventListener('mouseup', mouseup)
   _data.overlay.removeEventListener('mousedown', mousedown)
