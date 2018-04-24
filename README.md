@@ -46,6 +46,22 @@ Browser env: __coming soon__.
 
 An element with `v-drag` must have `position: absolute;` to be draggable.
 
+### Options
+
+You may desire only one part of an element to be `draggable`. You can achieve this by passing a string which referes to an `id` as argument to `v-drag`.
+
+```html
+<div id="header">
+  <div v-drag:header>
+    <div>
+      Some text
+    </div>
+  </div>
+</div>
+```
+
+This will result in any area that is not `<div id="header"`> not becoming draggable. One common use case is a modal, that is only draggable when the top area is clicked.
+
 ### Other
 
 Built by, for and at [BRANU](http://branu.jp/). Our open source projects can be found on our npm page: https://www.npmjs.com/org/branu-jp

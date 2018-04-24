@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 const _data = {
+  draggableElementId: null, // if this is present, only a specific area of the draggable will respond to dragging (eg header bar).
   down: false,
   initialX: 0,
   initialY: 0,
@@ -34,6 +35,15 @@ export function adjustElementZIndex(el, index) {
 }
 
 export function mousedown (e, el, _data) {
+  // if the user set a argument to v-drag,
+  // it means they only want a specific area to be draggable
+  // eg: `v-drag:drag-header` means only the element with 
+  // id="drag-header" should be draggable.
+  // If the user clicked another area, do nothing.
+  if (_data.draggableElementId && e.target.id !== _data.draggableElementId) {
+    return
+  }
+
   if (_data.overlay) {
     _data.overlay.remove()
   }
@@ -71,6 +81,7 @@ export function setDraggerOffset (el, _data) {
 
 export default Vue.directive('drag', {
   inserted: function (el, binding, vnode) {
+    _data.draggableElementId = binding.arg || null
     el.addEventListener('mouseup', (e) => mouseup(e, el, _data))
     el.addEventListener('mousedown', (e) => mousedown(e, el, _data))
     el.addEventListener('mousemove', (e) => mousemove(e, el, _data))
