@@ -3,8 +3,11 @@ import Vue from 'vue'
 const _data = {
   draggableElementId: null, // if this is present, only a specific area of the draggable will respond to dragging (eg header bar).
   down: false,
+  height: 0,
+  width: 0,
   initialX: 0,
   initialY: 0,
+  cursorPreviousX: 0,
   draggerOffsetLeft: 0,
   draggerOffsetTop: 0,
   overlay: null,
@@ -57,6 +60,10 @@ export function mousedown (e, el, _data) {
   if (_data.overlay) {
     _data.overlay.remove()
   }
+  // set the width each click
+  // just in case it changed since last time (by external plugin, for example)
+  _data.width = el.offsetWidth
+  _data.height = el.offsetHeight
   _data.down = true
   _data.initialX = e.clientX
   _data.initialY = e.clientY
@@ -81,10 +88,18 @@ export function mouseup (e, el, _data) {
 }
 
 export function mousemove (e, el, _data) {
+  // console.log("previous", _data.cursorPreviousX, "clientX", e.clientX)
   if (_data.down) {
-    el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
-    el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
-  }    
+    const movingLeft = _data.cursorPreviousX > e.clientX
+    // console.log(el.offsetLeft + _data.width, window.innerWidth)
+    if ((el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft) {
+      // do not move outside window
+    } else {
+      el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
+      el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
+    }
+  }
+  _data.cursorPreviousX = e.clientX
 }
 
 export function setDraggerOffset (el, _data) {
