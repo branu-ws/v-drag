@@ -7,6 +7,7 @@ import {
   createOverlay
 } from '../index.js'
 
+const context = describe
 describe('drag', () => {
   const mockEl = document.createElement('div')
 
@@ -42,21 +43,27 @@ describe('drag', () => {
   })
 
   describe('mousemove', () => {
-    it('does nothing is down === false', () => {
-      const data = {
-        down: false
-      }
-      const el = {
-        style: {
-          left: 0,
-          top: 0
+    context("mouse is not down", () => {
+      it('does not move element but updates cursorPrevious position', () => {
+        const data = {
+          down: false,
+          cursorPreviousX: 0,
+          cursorPreviousY: 0
         }
-      }
+        const el = {
+          style: {
+            left: 0,
+            top: 0
+          }
+        }
 
-      mousemove(undefined, el, data)
+        mousemove({ clientX: 1, clientY: 1 }, el, data)
 
-      expect(el.style.left).toBe(0)
-      expect(el.style.top).toBe(0)
+        expect(el.style.left).toBe(0)
+        expect(el.style.top).toBe(0)
+        expect(data.cursorPreviousX).toBe(1)
+        expect(data.cursorPreviousX).toBe(1)
+      })
     })
 
     it('updates the element style if down === true', () => {
