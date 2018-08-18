@@ -7,6 +7,7 @@ const _data = {
   width: 0,
   initialX: 0,
   initialY: 0,
+  constraintToWindow: false,
   cursorPreviousX: 0,
   cursorPreviousY: 0,
   draggerOffsetLeft: 0,
@@ -88,24 +89,35 @@ export function mouseup (e, el, _data) {
   setDraggerOffset(el, _data)
 }
 
+function reachedLeft(el, _data, movingLeft) {
+  return (el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft
+}
+
+function reachedRight(el, _data, movingRight) {
+  return el.offsetLeft <= 0 && !movingRight
+}
+
+function reachedTop(el, _data, movingUp) {
+  return el.offsetTop <= 0 && !movingUp 
+}
+
+function reachedBottom(el, _data, movingDown) {
+  return ((el.offsetTop + _data.height) >= window.innerHeight) && !movingDown
+}
+
 export function mousemove (e, el, _data) {
-  // console.log("previous", _data.cursorPreviousX, "clientX", e.clientX)
   if (_data.down) {
     const movingLeft = _data.cursorPreviousX > e.clientX
     const movingRight = _data.cursorPreviousX < e.clientX
     const movingUp = _data.cursorPreviousY < e.clientY
     const movingDown = _data.cursorPreviousY > e.clientY
 
-    if (
-      (el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft ||
-      (el.offsetLeft <= 0 && !movingRight)
-    ) {
+    if (_data.constraintToWindow && (reachedLeft(el, _data, movingLeft) || reachedRight(el, _data, movingRight))) {
       // do now allow moving outside the window horizontally
     } else {
       el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
     }
-    if (el.offsetTop <= 0 && !movingUp || 
-      (el.offsetTop + _data.height) >= window.innerHeight && !movingDown) {
+    if (_data.constraintToWindow && (reachedTop(el, _data, movingUp) || reachedBottom(el, _data, movingDown))) {
       // do now allow moving outside the window vertically
     } else {
       el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
@@ -123,6 +135,7 @@ export function setDraggerOffset (el, _data) {
 export default Vue.directive('drag', {
   inserted: function (el, binding, vnode) {
     _data.draggableElementId = binding.arg || null
+    _data.constraintToWindow = binding.modifiers['window-only']
     el.addEventListener('mouseup', (e) => mouseup(e, el, _data))
     el.addEventListener('mousedown', (e) => mousedown(e, el, _data))
     el.addEventListener('mousemove', (e) => mousemove(e, el, _data))
