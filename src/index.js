@@ -8,6 +8,7 @@ const _data = {
   initialX: 0,
   initialY: 0,
   cursorPreviousX: 0,
+  cursorPreviousY: 0,
   draggerOffsetLeft: 0,
   draggerOffsetTop: 0,
   overlay: null,
@@ -91,15 +92,27 @@ export function mousemove (e, el, _data) {
   // console.log("previous", _data.cursorPreviousX, "clientX", e.clientX)
   if (_data.down) {
     const movingLeft = _data.cursorPreviousX > e.clientX
-    // console.log(el.offsetLeft + _data.width, window.innerWidth)
-    if ((el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft) {
-      // do not move outside window
+    const movingRight = _data.cursorPreviousX < e.clientX
+    const movingUp = _data.cursorPreviousY < e.clientY
+    const movingDown = _data.cursorPreviousY > e.clientY
+
+    if (
+      (el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft ||
+      (el.offsetLeft <= 0 && !movingRight)
+    ) {
+      // do now allow moving outside the window horizontally
     } else {
       el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
+    }
+    if (el.offsetTop <= 0 && !movingUp || 
+      (el.offsetTop + _data.height) >= window.innerHeight && !movingDown) {
+      // do now allow moving outside the window vertically
+    } else {
       el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
     }
   }
   _data.cursorPreviousX = e.clientX
+  _data.cursorPreviousY = e.clientY
 }
 
 export function setDraggerOffset (el, _data) {
