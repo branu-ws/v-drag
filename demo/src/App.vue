@@ -2,7 +2,7 @@
   <div id="app">
     <h3>v-drag - make any element draggable</h3>
     <div class="demo-outer">
-      <div class="block" v-drag>
+      <div class="block" v-drag.window-only>
         Drag me
       </div>
     </div>

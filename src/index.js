@@ -89,12 +89,12 @@ export function mouseup (e, el, _data) {
   setDraggerOffset(el, _data)
 }
 
-function reachedLeft(el, _data, movingLeft) {
-  return (el.offsetLeft + _data.width >= window.innerWidth) && !movingLeft
+function reachedLeft(el, _data) {
+  return el.offsetLeft <= 0
 }
 
-function reachedRight(el, _data, movingRight) {
-  return el.offsetLeft <= 0 && !movingRight
+function reachedRight(el, _data) {
+  return el.offsetLeft + _data.width >= window.innerWidth
 }
 
 function reachedTop(el, _data, movingUp) {
@@ -107,14 +107,20 @@ function reachedBottom(el, _data, movingDown) {
 
 export function mousemove (e, el, _data) {
   if (_data.down) {
-    const movingLeft = _data.cursorPreviousX > e.clientX
-    const movingRight = _data.cursorPreviousX < e.clientX
+    const movingRight = _data.cursorPreviousX > e.clientX
+    const movingLeft = _data.cursorPreviousX < e.clientX
     const movingUp = _data.cursorPreviousY < e.clientY
     const movingDown = _data.cursorPreviousY > e.clientY
 
-    if (_data.constraintToWindow && (reachedLeft(el, _data, movingLeft) || reachedRight(el, _data, movingRight))) {
+    const atLeft = reachedLeft(el, _data)
+    const atRight = reachedRight(el, _data)
+    if (_data.constraintToWindow && (atLeft || atRight)) {
+      if (atRight) el.style.left = window.innerWidth - _data.width + 'px'
+      if (atLeft) el.style.left = 0
+
       // do now allow moving outside the window horizontally
-    } else {
+    else if (movingLeft && (x.clientX < window.innerWidth - _data.width))
+    // } else {
       el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
     }
     if (_data.constraintToWindow && (reachedTop(el, _data, movingUp) || reachedBottom(el, _data, movingDown))) {
