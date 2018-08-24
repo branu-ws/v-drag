@@ -48,7 +48,7 @@ An element with `v-drag` must have `position: absolute;` to be draggable.
 
 ### Options
 
-You may desire only one part of an element to be `draggable`. You can achieve this by passing a string which referes to an `id` as argument to `v-drag`.
+You may desire only one part of an element to be `draggable`. You can achieve this by passing a string which refers to an `id` as argument to `v-drag`.
 
 ```html
 <div id="header">
@@ -62,7 +62,7 @@ You may desire only one part of an element to be `draggable`. You can achieve th
 
 This will result in any area that is not `<div id="header"`> not becoming draggable. One common use case is a modal, that is only draggable when the top area is clicked.
 
-You can constrain the draggable object from leaving the viewpor by using the `window-only` modifier like so:
+You can constrain the draggable object from leaving the viewport by using the `window-only` modifier like so:
 
 ```html
 <div v-drag.window-only>
