@@ -1,38 +1,44 @@
 import Vue from 'vue'
 
-const _data = {
-  draggableElementId: null, // if this is present, only a specific area of the draggable will respond to dragging (eg header bar).
-  down: false,
-  height: 0,
-  width: 0,
-  initialX: 0,
-  initialY: 0,
-  constraintToWindow: false,
-  cursorPreviousX: 0,
-  cursorPreviousY: 0,
-  draggerOffsetLeft: 0,
-  draggerOffsetTop: 0,
-  overlay: null,
-  draggableEl: null,
-  initialZIndex: undefined
-}
+class VdragData {
+  constructor() {
+    this.down = false;
+    this.draggableElementId = null; // if this is present, only a specific area of the draggable will respond to dragging (eg header bar). down = false;
+    this.height = 0;
+    this.width = 0;
+    this.initialX = 0;
+    this.initialY = 0;
+    this.constraintToWindow = false;
+    this.cursorPreviousX = 0;
+    this.cursorPreviousY = 0;
+    this.draggerOffsetLeft = 0;
+    this.draggerOffsetTop = 0;
+    this.overlay = null;
+    this.draggableEl = null;
+    this.initialZIndex = undefined;
+  }
+};
 
-export function createOverlay (e, el, _data) {
-  const overlay = document.createElement('div')
-  overlay.setAttribute('style', `
-    width: 100vw; 
-    height: 100vh; 
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10000;
-  `)
-  overlay.addEventListener('mouseup', (e) => mouseup(e, el, _data))
-  overlay.addEventListener('mousedown', (e) => mousedown(e, el, _data))
-  overlay.addEventListener('mousemove', (e) => mousemove(e, el, _data))
-  document.body.appendChild(overlay)
+export function createOverlay(e, el) {
+  var overlay = document.createElement('div');
 
-  return overlay
+  if (!el.vdrag_data) {
+    el.vdrag_data = new VdragData();
+  }
+
+  overlay.setAttribute('style', '\n    width: 100vw; \n    height: 100vh; \n    position: absolute;\n    top: 0;\n    left: 0;\n    z-index: 10000;\n  ');
+  overlay.addEventListener('mouseup', function (e) {
+    return mouseup(e, el);
+  });
+  overlay.addEventListener('mousedown', function (e) {
+    return mousedown(e, el);
+  });
+  overlay.addEventListener('mousemove', function (e) {
+    return mousemove(e, el);
+  });
+  document.body.appendChild(overlay);
+
+  return overlay;
 }
 
 function checkIfIdInPath(id, path) {
@@ -49,44 +55,44 @@ export function adjustElementZIndex(el, index) {
   el.style.zIndex = index
 }
 
-export function mousedown (e, el, _data) {
+export function mousedown(e, el) {
   // if the user set a argument to v-drag,
   // it means they only want a specific area to be draggable
   // eg: `v-drag:drag-header` means only the element with 
   // id="drag-header" should be draggable.
   // If the user clicked another area, do nothing.
-  if (_data.draggableElementId && !checkIfIdInPath(_data.draggableElementId, e.path)) {
-    return
+  if (el.vdrag_data.draggableElementId && !checkIfIdInPath(el.vdrag_data.draggableElementId, e.path)) {
+    return;
   }
 
-  if (_data.overlay) {
-    _data.overlay.remove()
+  if (el.vdrag_data.overlay) {
+    el.vdrag_data.overlay.remove();
   }
   // set the width each click
   // just in case it changed since last time (by external plugin, for example)
-  _data.width = el.offsetWidth
-  _data.height = el.offsetHeight
-  _data.down = true
-  _data.initialX = e.clientX
-  _data.initialY = e.clientY
-  const overlay = createOverlay(e, el, _data)
-  _data.overlay = overlay
-  adjustElementZIndex(el, 10001)
+  el.vdrag_data.width = el.offsetWidth;
+  el.vdrag_data.height = el.offsetHeight;
+  el.vdrag_data.down = true;
+  el.vdrag_data.initialX = e.clientX;
+  el.vdrag_data.initialY = e.clientY;
+  var overlay = createOverlay(e, el, el.vdrag_data);
+  el.vdrag_data.overlay = overlay;
+  adjustElementZIndex(el, 10001);
 }
 
-export function mouseup (e, el, _data) {
-  _data.down = false
-  if (!_data.overlay) {
-    return
+export function mouseup(e, el) {
+  el.vdrag_data.down = false;
+  if (!el.vdrag_data.overlay) {
+    return;
   }
 
-  _data.overlay.removeEventListener('mouseup', mouseup)
-  _data.overlay.removeEventListener('mousedown', mousedown)
-  _data.overlay.removeEventListener('mousemove', mousemove)
-  _data.overlay.remove()
-  adjustElementZIndex(el, _data.initialZIndex)
+  el.vdrag_data.overlay.removeEventListener('mouseup', mouseup);
+  el.vdrag_data.overlay.removeEventListener('mousedown', mousedown);
+  el.vdrag_data.overlay.removeEventListener('mousemove', mousemove);
+  el.vdrag_data.overlay.remove();
+  adjustElementZIndex(el, el.vdrag_data.initialZIndex);
 
-  setDraggerOffset(el, _data)
+  setDraggerOffset(el);
 }
 
 function reachedLeft(el, _data, movingLeft) {
@@ -105,42 +111,53 @@ function reachedBottom(el, _data, movingDown) {
   return ((el.offsetTop + _data.height) >= window.innerHeight) && !movingDown
 }
 
-export function mousemove (e, el, _data) {
-  if (_data.down) {
-    const movingLeft = _data.cursorPreviousX > e.clientX
-    const movingRight = _data.cursorPreviousX < e.clientX
-    const movingUp = _data.cursorPreviousY < e.clientY
-    const movingDown = _data.cursorPreviousY > e.clientY
+export function mousemove(e, el) {
+  if (el.vdrag_data.down) {
+    var movingLeft = el.vdrag_data.cursorPreviousX > e.clientX;
+    var movingRight = el.vdrag_data.cursorPreviousX < e.clientX;
+    var movingUp = el.vdrag_data.cursorPreviousY < e.clientY;
+    var movingDown = el.vdrag_data.cursorPreviousY > e.clientY;
 
-    if (_data.constraintToWindow && (reachedLeft(el, _data, movingLeft) || reachedRight(el, _data, movingRight))) {
+    if (el.vdrag_data.constraintToWindow && (reachedLeft(el, el.vdrag_data, movingLeft) || reachedRight(el, el.vdrag_data, movingRight))) {
       // do now allow moving outside the window horizontally
     } else {
-      el.style.left = _data.draggerOffsetLeft + (e.clientX - _data.initialX) + 'px'
+      el.style.left = el.vdrag_data.draggerOffsetLeft + (e.clientX - el.vdrag_data.initialX) + 'px';
     }
-    if (_data.constraintToWindow && (reachedTop(el, _data, movingUp) || reachedBottom(el, _data, movingDown))) {
+    if (el.vdrag_data.constraintToWindow && (reachedTop(el, el.vdrag_data, movingUp) || reachedBottom(el, el.vdrag_data, movingDown))) {
       // do now allow moving outside the window vertically
     } else {
-      el.style.top = _data.draggerOffsetTop + (e.clientY - _data.initialY) + 'px'
+      el.style.top = el.vdrag_data.draggerOffsetTop + (e.clientY - el.vdrag_data.initialY) + 'px';
     }
   }
-  _data.cursorPreviousX = e.clientX
-  _data.cursorPreviousY = e.clientY
+  el.vdrag_data.cursorPreviousX = e.clientX;
+  el.vdrag_data.cursorPreviousY = e.clientY;
 }
 
-export function setDraggerOffset (el, _data) {
-  _data.draggerOffsetLeft = el.offsetLeft
-  _data.draggerOffsetTop = el.offsetTop
+export function setDraggerOffset(el) {
+  el.vdrag_data.draggerOffsetLeft = el.offsetLeft;
+  el.vdrag_data.draggerOffsetTop = el.offsetTop;
 }
 
 export default Vue.directive('drag', {
-  inserted: function (el, binding, vnode) {
-    _data.draggableElementId = binding.arg || null
-    _data.constraintToWindow = binding.modifiers['window-only']
-    el.addEventListener('mouseup', (e) => mouseup(e, el, _data))
-    el.addEventListener('mousedown', (e) => mousedown(e, el, _data))
-    el.addEventListener('mousemove', (e) => mousemove(e, el, _data))
-    setDraggerOffset(el, _data)
-    _data.initialZIndex = el.style.zIndex
+  inserted: function inserted(el, binding, vnode) {
+
+    if (!el.vdrag_data) {
+      el.vdrag_data = new VdragData();
+    }
+
+    el.vdrag_data.draggableElementId = binding.arg || null;
+    el.vdrag_data.constraintToWindow = binding.modifiers['window-only'];
+    el.addEventListener('mouseup', function (e) {
+      return mouseup(e, el);
+    });
+    el.addEventListener('mousedown', function (e) {
+      return mousedown(e, el);
+    });
+    el.addEventListener('mousemove', function (e) {
+      return mousemove(e, el);
+    });
+    setDraggerOffset(el);
+    el.vdrag_data.initialZIndex = el.style.zIndex;
   }
 })
 
