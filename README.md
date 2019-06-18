@@ -51,12 +51,9 @@ An element with `v-drag` must have `position: absolute;` to be draggable.
 You may desire only one part of an element to be `draggable`. You can achieve this by passing a string which refers to an `id` as argument to `v-drag`.
 
 ```html
-<div id="header">
-  <div v-drag:header>
-    <div>
-      Some text
-    </div>
-  </div>
+<div style="position: absolute;" v-drag:header>
+  <div id="header">Draggable</div>
+  <div>This area is NOT draggable.</div>
 </div>
 ```
 
